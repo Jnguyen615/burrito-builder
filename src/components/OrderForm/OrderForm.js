@@ -1,9 +1,33 @@
 import { useState, useEffect } from "react";
 
-function OrderForm(props) {
+function OrderForm( {setOrders, orders} ) {
   const [name, setName] = useState("");
   const [ingredients, setIngredients] = useState([]);
-  const [input, setInput] = useState("");
+  const [formIsFilled, setFormIsFilled] = useState('false')
+  const [error, setError] = useState('')
+  
+  const newOrder = (order) => {
+    fetch('http://localhost:3001/api/v1/orders', {
+      method: "POST",
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(newOrder)
+
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('New order created:', data);
+      })
+      .catch(error => {
+        console.error('Error creating order:', error);
+      });
+  };
 
   function clearInputs() {
     setName("");
@@ -12,12 +36,19 @@ function OrderForm(props) {
 
   const handleInputChange = e => {
     const input = e.target.value.toLowerCase();
-    setInput(input);
+    setName(input);
   };
 
   useEffect(() => {
-    console.log('ingredients1:', ingredients)
-  }, [ingredients])
+    if(name.length && ingredients.length) {
+      setFormIsFilled(true)
+    } else {
+      setFormIsFilled(false)
+    }
+  }, [name, ingredients])
+
+ 
+
 
   const handleMultipleIngredients = (e, ingredient) => {
     e.preventDefault();
@@ -26,7 +57,20 @@ function OrderForm(props) {
   //i want beans added to array
 }
   function handleSubmit(e) {
-    e.preventDefault();
+    e.preventDefault()
+    if(formIsFilled) {
+      let order = {
+        name,
+        ingredients
+      }
+      newOrder(order).then((response) => {
+        setOrders([...orders, response])
+        clearInputs()
+      })
+      .catch((error) => console.log(error))
+    } else {
+      setError(true)
+    }
   }
 
   const possibleIngredients = [
@@ -80,6 +124,3 @@ function OrderForm(props) {
 }
 
 export default OrderForm;
-
-//when a user clicks, what are they clicking, what do you want to handle? 
-//user clicked beans - i want it added to an ingredents
