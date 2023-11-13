@@ -3,16 +3,27 @@ import { useState } from "react";
 function OrderForm(props) {
   const [name, setName] = useState("");
   const [ingredients, setIngredients] = useState([]);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    clearInputs();
-  }
+  const [input, setInput] = useState("");
 
   function clearInputs() {
     setName("");
     setIngredients([]);
+  }
+
+  const handleInputChange = e => {
+    const input = e.target.value.toLowerCase();
+    setInput(input);
   };
+
+  const handleMultipleIngredients = (e, ingredient) => {
+    e.preventDefault();
+    setIngredients([...ingredients, ...ingredient])
+    console.log('ingredients', ingredients)
+  //i want beans added to array 
+}
+  function handleSubmit(e) {
+    e.preventDefault();
+  }
 
   const possibleIngredients = [
     "beans",
@@ -28,12 +39,15 @@ function OrderForm(props) {
     "cilantro",
     "sour cream",
   ];
-  const ingredientButtons = possibleIngredients.map((ingredient) => {
+
+  const ingredientButtons = possibleIngredients.map((ingredient, index) => {
     return (
       <button
-        key={ingredient}
+        key={index}
         name={ingredient}
-        // onClick={(e) => }
+        multiple
+        value={ingredients}
+        onClick={e => handleMultipleIngredients(e, ingredient)}
       >
         {ingredient}
       </button>
@@ -41,22 +55,27 @@ function OrderForm(props) {
   });
 
   return (
-    <form>
-      <input
-        type="text"
-        placeholder="Name"
-        name="name"
-        value={name}
-        // onChange={(e) => }
-      />
+    <div className="form-box">
+      <form>
+        <input
+          type="text"
+          placeholder="Name"
+          name="name"
+          value={name}
+          onChange={e => handleInputChange(e)}
+        />
 
-      {ingredientButtons}
-
-      <p>Order: {ingredients.join(", ") || "Nothing selected"}</p>
-
-      <button onClick={(e) => handleSubmit(e)}>Submit Order</button>
-    </form>
+        {ingredientButtons}
+        <p>Order: {ingredients.join(", ") || "Nothing selected"}</p>
+      </form>
+      <button type="button" onClick={e => handleSubmit(e)}>
+        Submit Order
+      </button>
+    </div>
   );
 }
 
 export default OrderForm;
+
+//when a user clicks, what are they clicking, what do you want to handle? 
+//user clicked beans - i want it added to an ingredents
