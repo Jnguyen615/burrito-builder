@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function OrderForm(props) {
   const [name, setName] = useState("");
@@ -15,11 +15,15 @@ function OrderForm(props) {
     setInput(input);
   };
 
+  useEffect(() => {
+    console.log('ingredients1:', ingredients)
+  }, [ingredients])
+
   const handleMultipleIngredients = (e, ingredient) => {
     e.preventDefault();
-    setIngredients([...ingredients, ...ingredient])
-    console.log('ingredients', ingredients)
-  //i want beans added to array 
+    setIngredients([...ingredients, ingredient])
+    console.log('ingredients', ingredients) 
+  //i want beans added to array
 }
   function handleSubmit(e) {
     e.preventDefault();
