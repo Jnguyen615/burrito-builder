@@ -7,13 +7,12 @@ function OrderForm( {setOrders, orders} ) {
   const [error, setError] = useState('')
   
   const newOrder = (order) => {
-    fetch('http://localhost:3001/api/v1/orders', {
+    return fetch('http://localhost:3001/api/v1/orders', {
       method: "POST",
       headers: {
         'Content-type': 'application/json'
       },
-      body: JSON.stringify(newOrder)
-
+      body: JSON.stringify(order)
     })
       .then(response => {
         if (!response.ok) {
@@ -23,11 +22,15 @@ function OrderForm( {setOrders, orders} ) {
       })
       .then(data => {
         console.log('New order created:', data);
+        return data;
       })
       .catch(error => {
         console.error('Error creating order:', error);
+        throw error;
       });
   };
+  
+  
 
   function clearInputs() {
     setName("");
@@ -56,22 +59,26 @@ function OrderForm( {setOrders, orders} ) {
     console.log('ingredients', ingredients) 
   //i want beans added to array
 }
-  function handleSubmit(e) {
-    e.preventDefault()
-    if(formIsFilled) {
-      let order = {
-        name,
-        ingredients
-      }
-      newOrder(order).then((response) => {
-        setOrders([...orders, response])
-        clearInputs()
+const handleSubmit = (e) => {
+  e.preventDefault();
+  if (formIsFilled) {
+    let order = {
+      name,
+      ingredients,
+    };
+    newOrder(order)
+      .then((response) => {
+        setOrders((prevOrders) => ({
+          ...prevOrders,
+          orders: [...prevOrders.orders, response],
+        }));
+        clearInputs();
       })
-      .catch((error) => console.log(error))
-    } else {
-      setError(true)
-    }
+      .catch((error) => console.log(error));
+  } else {
+    setError(true);
   }
+}
 
   const possibleIngredients = [
     "beans",
@@ -114,6 +121,7 @@ function OrderForm( {setOrders, orders} ) {
         />
 
         {ingredientButtons}
+        {!ingredients || !name && <p>Please select at least one ingredient and enter a name for the order.</p>}
         <p>Order: {ingredients.join(", ") || "Nothing selected"}</p>
       </form>
       <button type="button" onClick={e => handleSubmit(e)}>

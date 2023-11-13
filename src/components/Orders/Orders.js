@@ -3,16 +3,14 @@ import "./Orders.css";
 
 const Orders = ( {orders, index, id} ) => {
   const orderEls =  Array.isArray(orders.orders) && orders.orders.map((order) => {
-    console.log('orders', orders)
     return (
       <div className="order" key={order.id}>
-        <h3>{order.name}</h3>
-        <ul className="ingredient-list">
-          {Array.isArray(order.ingredients) && order.ingredients.map((ingredient, ingredientIndex) => {
-            const uniqueKey = `${order.id || index}-${ingredientIndex}`;
-            console.log('newkey', uniqueKey)
-            return <li key={uniqueKey}>{ingredient}</li>;
-          })}
+      <h3>{order.name}</h3>
+      <ul className="ingredient-list">
+        {Array.isArray(order.ingredients) && order.ingredients.map((ingredient, ingredientIndex) => {
+          const uniqueKey = `${order.id}-${ingredientIndex}`;
+          return <li key={uniqueKey}>{ingredient}</li>;
+        })}
         </ul>
       </div>
     );
